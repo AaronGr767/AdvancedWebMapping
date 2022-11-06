@@ -5,6 +5,7 @@ from django.contrib.auth import login, authenticate #add this
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from .models import Profile
+from django.http import HttpResponse
 
 # Create your views here.
 def register_request(request):
@@ -32,11 +33,16 @@ def login_request(request):
 			user = authenticate(username=username, password=password)
 			if user is not None:
 				login(request, user)
-				messages.info(request, f"You are now logged in as {username}.")
-				return redirect("main:homepage")
+				messages.info(request, "You are now logged in as {username}.")
+				return redirect("main:map")
 			else:
-				messages.error(request,"Invalid username or password.")
+				messages.error(request, "Invalid username or password.")
 		else:
-			messages.error(request,"Invalid username or password.")
+			messages.error(request, "Invalid username or password.")
 	form = AuthenticationForm()
 	return render(request=request, template_name="register/login.html", context={"login_form":form})
+
+
+def userMap(request):
+
+	return render(request, 'userMap.html')
