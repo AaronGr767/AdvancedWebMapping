@@ -1,6 +1,10 @@
 {% load leaflet_tags %}
+{% load static %}
+
 
 <head>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+
      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.2/dist/leaflet.css"
      integrity="sha256-sA+zWATbFveLLNqWO2gtiw3HL/lh1giY/Inf1BJ0z14="
      crossorigin=""/>
@@ -15,3 +19,24 @@
     <div id="map"></div>
 
 </body>
+
+<script type="text/javascript">
+
+    map = L.map('map', {doubleClickZoom: false}).locate({setView: true, maxZoom: 16});
+
+    function onLocationFound(e) {
+    var radius = e.accuracy;
+
+    L.marker(e.latlng).addTo(map)
+        .bindPopup("You are within " + radius + " meters from this point").openPopup();
+
+    L.circle(e.latlng, radius).addTo(map);
+}
+
+    map.on('locationfound', onLocationFound);
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(map);
+
+</script>
