@@ -19,5 +19,6 @@ from main import views
 
 urlpatterns = [
     path('', include('main.urls', namespace="main")),
+    path("accounts/", include("django.contrib.auth.urls")),
     path('admin/', admin.site.urls),
 ]

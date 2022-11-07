@@ -1,3 +1,5 @@
+
+
 {% load leaflet_tags %}
 {% load static %}
 
@@ -34,6 +36,16 @@
 }
 
     map.on('locationfound', onLocationFound);
+
+    function onMapClick(e) {
+    alert("You clicked the map at " + e.latlng);
+    let popup ='<form id="SaveLocationForm" method="POST"> {%  csrf_token %} <div class="form_info"><input type="hidden" name="location" value="$()e.latlng"</div><button type="submit">Submit Location</button></form>';
+    let addMarker = L.marker(e.latlng).bindPopup(popup)
+    addMarker.addTo(map)
+    }
+
+map.on('click', onMapClick);
+
 
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,

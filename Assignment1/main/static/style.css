@@ -1,5 +1,16 @@
 #map { height: 400px; }
 
-p {
-    color: aqua;
+header {
+    background-color: lightsteelblue;
+    padding: 20px;
+    text-align: center;
+    font-size: 25px;
+    color: white;
+}
+
+footer {
+    background-color: lightsteelblue;
+    padding: 10px;
+    text-align: center;
+    color: white;
 }

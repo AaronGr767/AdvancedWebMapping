@@ -1,11 +1,11 @@
 # views.py
 from django.shortcuts import render, redirect
 from .forms import UserCreationForm
-from django.contrib.auth import login, authenticate #add this
+from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from .models import Profile
-from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 def register_request(request):
@@ -21,7 +21,7 @@ def register_request(request):
 			return redirect("main:login")
 		messages.error(request, "Unsuccessful registration. Invalid information.")
 	form = UserCreationForm()
-	return render(request=request, template_name="register/register.html", context={"register_form":form})
+	return render(request=request, template_name="registration/register.html", context={"register_form":form})
 
 
 def login_request(request):
@@ -40,9 +40,20 @@ def login_request(request):
 		else:
 			messages.error(request, "Invalid username or password.")
 	form = AuthenticationForm()
-	return render(request=request, template_name="register/login.html", context={"login_form":form})
+	return render(request=request, template_name="registration/login.html", context={"login_form":form})
 
 
-def userMap(request):
+def user_map(request):
+# 	if(request.method == 'POST'):
+# 		location = request.POST.get('location')
+# 		user_profile = Profile(location=location)
+# 		user_profile.save()
+#
+# 	form = AuthenticationForm()
+	return render(template_name="userMap.html")
 
-	return render(request, 'userMap.html')
+@login_required
+def logout_request(request):
+	logout(request)
+	messages.info(request, "Successfully logged out!")
+	return redirect("main:home")
