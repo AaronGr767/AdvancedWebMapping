@@ -4,6 +4,12 @@
 {% load crispy_forms_tags %}
 {% block title %}Login{% endblock %}
 {% block content %}
+    {% load static %}
+
+
+<head>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
 <!--Login-->
 <div class="container py-5">
   <h1>Login</h1>

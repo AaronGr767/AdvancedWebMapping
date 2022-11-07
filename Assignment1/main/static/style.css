@@ -1,4 +1,14 @@
-#map { height: 400px; }
+#map {
+    height: 400px;
+    margin: 20px;
+}
+
+.nav-item {
+    display: block;
+    height: 20px;
+    width: auto;
+    border: 1px solid #000;
+}
 
 header {
     background-color: lightsteelblue;
@@ -14,3 +24,9 @@ footer {
     text-align: center;
     color: white;
 }
+
+
+
+
+
+

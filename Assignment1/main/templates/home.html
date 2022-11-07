@@ -1,15 +1,21 @@
 {% extends 'base.html' %}
 {% block content %}
+    {% load static %}
+
+<head>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+
     {% if user.is_authenticated %}
-        <a class="nav-item" href="{%  url 'logout' %}">
-            Log Out <i class="log_out"></i>
-        </a>
+        <button onclick="location.href='{%  url 'logout' %}'" type="button">
+         Log Out</button>
+
+        <button onclick="location.href='{% url 'main:map' %}'" type="button">
+         View Map</button>
     {% else %}
-        <a class="nav_item" href="{% url 'login' %}">
-            Log In <i class="log_in"></i>
-        </a>
-        <a class="nav_item" href="{% url 'main:registration' %}">
-            Register <i class="log_in"></i>
-        </a>
+        <button onclick="location.href='{% url 'login' %}'" type="button">
+         Log In</button>
+        <button onclick="location.href='{% url 'main:registration' %}'" type="button">
+         Register</button>
     {% endif %}
 {% endblock %}
