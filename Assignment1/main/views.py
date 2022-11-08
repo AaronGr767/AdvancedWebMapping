@@ -44,16 +44,6 @@ def login_request(request):
 	form = AuthenticationForm()
 	return render(request=request, template_name="registration/login.html", context={"login_form":form})
 
-
-# def user_map(request):
-# 	if(request.method == 'POST'):
-#  		location = request.POST.get('location')
-#  		user_profile = Profile(location=location)
-#  		user_profile.save()
-#
-#  	form = AuthenticationForm()
-# 	return render(template_name="userMap.html")
-
 @login_required
 def update_database(request):
 

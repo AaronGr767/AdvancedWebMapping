@@ -10,21 +10,20 @@
 
     {% if user.is_authenticated %}
         <div class="m-2 text-center">
-        Hi {{ user.username }}! Welcome to this site!
+            Hi {{ user.username }}! Welcome to this site!
         </div>
         <div class="m-2 text-center">
-        <button onclick="location.href='{%  url 'logout' %}'" type="button"   class="btn btn-outline-primary">
-         Log Out</button>
-
-        <button onclick="location.href='{% url 'main:map' %}'" type="button" class="btn btn-outline-success">
-         View Map</button>
+            <button onclick="location.href='{%  url 'logout' %}'" type="button"   class="btn btn-outline-primary">
+             Log Out</button>
+            <button onclick="location.href='{% url 'main:map' %}'" type="button" class="btn btn-outline-success">
+             View Map</button>
         </div>
     {% else %}
         <div class="m-2 text-center">
-        <button onclick="location.href='{% url 'login' %}'" type="button" class="btn btn-outline-primary">
-         Log In</button>
-        <button onclick="location.href='{% url 'main:registration' %}'" type="button" class="btn btn-outline-primary">
-         Register</button>
+            <button onclick="location.href='{% url 'login' %}'" type="button" class="btn btn-outline-primary">
+             Log In</button>
+            <button onclick="location.href='{% url 'main:registration' %}'" type="button" class="btn btn-outline-primary">
+             Register</button>
         </div>
     {% endif %}
 {% endblock %}

@@ -1,25 +1,22 @@
 {% extends 'base.html' %}
-
-
 {% load crispy_forms_tags %}
 {% load crispy_forms_filters %}
 {% block title %}Login{% endblock %}
 {% block content %}
-    {% load static %}
-
+{% load static %}
 
 <head>
     <link rel="stylesheet" href="{% static 'style.css' %}">
 </head>
-<!--Login-->
-<div class="container py-5">
-  <h1>Login</h1>
-  <form method="POST">
-    {% csrf_token %}
-    {{ form|crispy }}
-      <button type="submit">Log In</button>
-  </form>
-  <p class="text-center">Don't have an account? <a href="/registration">Create an account</a>.</p>
-</div>
+
+    <div class="container py-5">
+      <h1>Login</h1>
+      <form method="POST">
+        {% csrf_token %}
+        {{ form|crispy }}
+          <button type="submit">Log In</button>
+      </form>
+      <p class="text-center">Don't have an account? <a href="/registration">Create an account</a>.</p>
+    </div>
 
 {% endblock %}
