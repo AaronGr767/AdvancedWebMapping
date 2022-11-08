@@ -20,7 +20,7 @@ def register_request(request):
 			user_profile.save()
 			login(request, user)
 			messages.success(request, "Registration successful." )
-			return redirect("main:login")
+			return redirect("login")
 		messages.error(request, "Unsuccessful registration. Invalid information.")
 	form = UserCreationForm()
 	return render(request=request, template_name="registration/register.html", context={"register_form":form})
@@ -56,6 +56,7 @@ def login_request(request):
 
 @login_required
 def update_database(request):
+
     my_location = request.POST.get("point", None)
     if not my_location:
         return JsonResponse({"message": "No location found."}, status=400)
