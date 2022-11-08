@@ -5,7 +5,6 @@
 
 
 <head>
-    <link rel="stylesheet" href="{% static 'style.css' %}">
 
      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.2/dist/leaflet.css"
      integrity="sha256-sA+zWATbFveLLNqWO2gtiw3HL/lh1giY/Inf1BJ0z14="
@@ -19,6 +18,10 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script></head>
 
 <body>
+    <div class="m-2 text-center">
+        <button onclick="location.href='{%  url 'main:home' %}'" type="button"   class="btn btn-outline-primary">
+         Home</button>
+    </div>
     <form action="/updatedb" method="post">
         {% csrf_token %}
 
@@ -42,7 +45,6 @@
     map.on('locationfound', onLocationFound);
 
     function onMapClick(e) {
-    alert("You clicked the map at " + e.latlng);
         update_db(e.latlng.lng,e.latlng.lat)
     }
 
