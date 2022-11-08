@@ -9,4 +9,7 @@ User = get_user_model()
 class Profile(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     username = models.CharField(max_length=150, primary_key=True)
-    location = models.PointField(null=True)
+    last_location = models.PointField(null=True)
+
+    def __str__(self):
+        return f"{self.user}"

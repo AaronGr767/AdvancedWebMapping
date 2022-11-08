@@ -10,6 +10,9 @@
 
     {% if user.is_authenticated %}
         <div class="m-2 text-center">
+        Hi {{ user.username }}! Welcome to this site!
+        </div>
+        <div class="m-2 text-center">
         <button onclick="location.href='{%  url 'logout' %}'" type="button"   class="btn btn-outline-primary">
          Log Out</button>
 
