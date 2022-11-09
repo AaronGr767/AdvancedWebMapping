@@ -15,3 +15,8 @@
 
 -Screenshot of home ![image](https://user-images.githubusercontent.com/75795290/200926731-0b89e555-820a-4825-86ef-203d54c982c7.png)
 
+-Screenshot of data saved on pgadmin ![image](https://user-images.githubusercontent.com/75795290/200927871-a718cf5b-71fc-495a-8556-e9f3b6a4d776.png)
+
+-Screenshot of user profile displaying the location they chose to save ![image](https://user-images.githubusercontent.com/75795290/200928664-329f9b08-f129-4eb8-8fc8-d88b1398e743.png)
+
+
