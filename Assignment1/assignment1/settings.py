@@ -14,8 +14,10 @@ from pathlib import Path
 import os
 import socket
 from decouple import config
+from django.conf.global_settings import DATABASES
+
 #Deploy attempt
-#import dj_database_url
+import dj_database_url
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -26,16 +28,28 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-#SECRET_KEY = config('SECRET_KEY')
-SECRET_KEY = 'django-insecure-tjz#s=toy(l$9s37kri&-ypb30y*axcnlhhd4bt2@mgt&u*%0h'
+SECRET_KEY = config('SECRET_KEY')
+#SECRET_KEY = 'django-insecure-tjz#s=toy(l$9s37kri&-ypb30y*axcnlhhd4bt2@mgt&u*%0h'
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-DEPLOY_SECURE = config('DEPLOY_SECURE', default=False, cast=bool)
+#DEBUG = True
+DEBUG = config('DEBUG', default=False, cast=bool)
+# DEPLOY_SECURE = config('DEPLOY_SECURE', default=False, cast=bool)
 
 ALLOWED_HOSTS = []
 
+if config('DEPLOY_SECURE'):
+    DEBUG = False
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=lambda v: [s.strip() for s in v.split(',')])
+    CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', cast=lambda v: [s.strip() for s in v.split(',')])
+else:
+    DEBUG = True
+    CSRF_COOKIE_SECURE = False
+    SESSION_COOKIE_SECURE = False
+    ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -96,28 +110,40 @@ WSGI_APPLICATION = 'assignment1.wsgi.application'
 # else:
 #     DATABASES = {'default': config('DATABASE_LOCAL', default=None, cast=dj_database_url.parse)}
 
-if os.environ.get('CONDA_PREFIX', '').startswith('/opt'):
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.contrib.gis.db.backends.postgis',
-            'NAME': 'gis',
-            'HOST': 'awm_assign1-db',
-            'USER': 'docker',
-            'PASSWORD': 'docker',
-            'PORT': 5432
-        }
-    }
+# if os.environ.get('CONDA_PREFIX', '').startswith('/opt'):
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.contrib.gis.db.backends.postgis',
+#             'NAME': 'gis',
+#             'HOST': 'awm_assign1-db',
+#             'USER': 'docker',
+#             'PASSWORD': 'docker',
+#             'PORT': 5432
+#         }
+#     }
+# else:
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.contrib.gis.db.backends.postgis',
+#             'NAME': 'gis',
+#             'HOST': 'localhost',
+#             'USER': 'docker',
+#             'PASSWORD': 'docker',
+#             'PORT': 25432
+#         }
+#     }
+
+# if socket.gethostname() =="DESKTOP-8550Q28":
+#     DATABASES["default"]["HOST"] = "localhost"
+#     DATABASES["default"]["PORT"] = docker_config.POSTGIS_PORT
+# else:
+#     DATABASES["default"]["HOST"] = f"{docker_config.PROJECT_NAME}-postgis"
+#     DATABASES["default"]["PORT"] = 5432
+
+if os.environ.get('CONDA_PREFIX','').startswith('/opt'):
+    DATABASES = {'default': config('DATABASE_DOCKER', default=None, cast=dj_database_url.parse)}
 else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.contrib.gis.db.backends.postgis',
-            'NAME': 'gis',
-            'HOST': 'localhost',
-            'USER': 'docker',
-            'PASSWORD': 'docker',
-            'PORT': 25432
-        }
-    }
+    DATABASES = {'default': config('DATABASE_LOCAL', default=None, cast=dj_database_url.parse)}
 
 
 # Password validation
@@ -181,7 +207,7 @@ LEAFLET_CONFIG = {
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
-#Deploy attempt
+# Deploy attempt
 # if DEPLOY_SECURE:
 #     DEBUG = False
 #     CSRF_COOKIE_SECURE = True
