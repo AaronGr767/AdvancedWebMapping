@@ -1,5 +1,7 @@
 # views.py
+import requests
 from django.contrib.gis.geos import Point
+from django.core.mail.backends import console
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from .forms import UserCreationForm
@@ -8,6 +10,16 @@ from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from .models import Profile
 from django.contrib.auth.decorators import login_required
+import json;
+import overpy;
+
+# from rest_framework.permissions import AllowAny
+# from rest_framework.views import APIView
+# from rest_framework.response import Response
+# from .serializers import UserSerializer,RegisterSerializer
+# from django.contrib.auth.models import User
+# from rest_framework.authentication import TokenAuthentication
+# from rest_framework import generics
 
 # Create your views here.
 def register_request(request):
@@ -68,3 +80,37 @@ def logout_request(request):
 	logout(request)
 	messages.info(request, "Successfully logged out!")
 	return redirect("main:home")
+
+@login_required
+def map_content(request):
+	overpass_url = "http://overpass-api.de/api/interpreter"
+	overpass_query = """
+	[out:json][timeout:25];
+	{{geocodeArea:Dublin}}->.searchArea;
+	(
+	  node["amenity"="bar"](area.searchArea);
+	  way["amenity"="bar"](area.searchArea);
+	  relation["amenity"="bar"](area.searchArea);
+	);
+	out body;
+	>;
+	out skel qt;
+	"""
+	response = requests.get(overpass_url,
+                        params={'data': overpass_query})
+	data = response.json()
+	console.log(data);
+
+# Class based view to Get User Details using Token Authentication
+# class UserDetailAPI(APIView):
+#   authentication_classes = (TokenAuthentication,)
+#   permission_classes = (AllowAny,)
+#   def get(self,request,*args,**kwargs):
+#     user = User.objects.get(id=request.user.id)
+#     serializer = UserSerializer(user)
+#     return Response(serializer.data)
+#
+# #Class based view to register user
+# class RegisterUserAPIView(generics.CreateAPIView):
+#   permission_classes = (AllowAny,)
+#   serializer_class = RegisterSerializer

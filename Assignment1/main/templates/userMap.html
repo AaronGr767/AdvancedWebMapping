@@ -16,12 +16,14 @@
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script></head>
-
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
 <body>
     <div class="m-2 text-center">
         <button onclick="location.href='{%  url 'main:home' %}'" type="button"   class="btn btn-outline-primary">
          Home</button>
-        <p>Click anywhere on the map to save your location!</p>
+        <p>Create your trip!</p>
+        <button onclick="removeMarker()">Remove Last Location</button>
     </div>
     <form action="/updatedb" method="post">
         {% csrf_token %}
@@ -31,20 +33,53 @@
 
 <script type="text/javascript">
 
-    map = L.map('map', {doubleClickZoom: false}).locate({setView: true, maxZoom: 16});
+function removeMarker(){
+    counter = counter - 1;
+    map.removeControl(route[counter])
+}
+
+
+     map = L.map('map', {doubleClickZoom: false}).locate({setView: true, maxZoom: 16});
+     let clicker = false;
+
+     let startLoc;
+     let lastLoc;
+     let route= [];
+     let counter = 0;
 
     function onLocationFound(e) {
     var radius = e.accuracy;
+
 
     L.marker(e.latlng).addTo(map)
         .bindPopup("You are within " + radius + " meters from this point").openPopup();
 
     L.circle(e.latlng, radius).addTo(map);
+
+     startLoc = e;
+     console.log(startLoc);
+     console.log(e.latlng)
     }
 
     map.on('locationfound', onLocationFound);
 
     function onMapClick(e) {
+
+        console.log(e.lnglat);
+
+        route[counter] = L.Routing.control({
+            waypoints: [
+                L.latLng(startLoc.latlng),
+                L.latLng(e.latlng)
+            ],
+            routeWhileDragging: true
+        }).addTo(map);
+
+        startLoc = e;
+
+        clicker = true
+        counter ++;
+
         update_db(e.latlng.lng,e.latlng.lat)
     }
 
@@ -91,6 +126,7 @@
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(map);
+
 
 </script>
 

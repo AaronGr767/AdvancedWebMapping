@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     'main.apps.MainConfig',
     'crispy_forms',
     'leaflet',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -110,28 +111,28 @@ WSGI_APPLICATION = 'assignment1.wsgi.application'
 # else:
 #     DATABASES = {'default': config('DATABASE_LOCAL', default=None, cast=dj_database_url.parse)}
 
-# if os.environ.get('CONDA_PREFIX', '').startswith('/opt'):
-#     DATABASES = {
-#         'default': {
-#             'ENGINE': 'django.contrib.gis.db.backends.postgis',
-#             'NAME': 'gis',
-#             'HOST': 'awm_assign1-db',
-#             'USER': 'docker',
-#             'PASSWORD': 'docker',
-#             'PORT': 5432
-#         }
-#     }
-# else:
-#     DATABASES = {
-#         'default': {
-#             'ENGINE': 'django.contrib.gis.db.backends.postgis',
-#             'NAME': 'gis',
-#             'HOST': 'localhost',
-#             'USER': 'docker',
-#             'PASSWORD': 'docker',
-#             'PORT': 25432
-#         }
-#     }
+if os.environ.get('CONDA_PREFIX', '').startswith('/opt'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.contrib.gis.db.backends.postgis',
+            'NAME': 'gis',
+            'HOST': 'awm_assign2-db',
+            'USER': 'docker',
+            'PASSWORD': 'docker',
+            'PORT': 5432
+        }
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.contrib.gis.db.backends.postgis',
+            'NAME': 'gis',
+            'HOST': 'localhost',
+            'USER': 'docker',
+            'PASSWORD': 'docker',
+            'PORT': 25432
+        }
+    }
 
 # if socket.gethostname() =="DESKTOP-8550Q28":
 #     DATABASES["default"]["HOST"] = "localhost"
@@ -140,10 +141,10 @@ WSGI_APPLICATION = 'assignment1.wsgi.application'
 #     DATABASES["default"]["HOST"] = f"{docker_config.PROJECT_NAME}-postgis"
 #     DATABASES["default"]["PORT"] = 5432
 
-if os.environ.get('CONDA_PREFIX','').startswith('/opt'):
-    DATABASES = {'default': config('DATABASE_DOCKER', default=None, cast=dj_database_url.parse)}
-else:
-    DATABASES = {'default': config('DATABASE_LOCAL', default=None, cast=dj_database_url.parse)}
+# if os.environ.get('CONDA_PREFIX','').startswith('/opt'):
+#     DATABASES = {'default': config('DATABASE_DOCKER', default=None, cast=dj_database_url.parse)}
+# else:
+#     DATABASES = {'default': config('DATABASE_LOCAL', default=None, cast=dj_database_url.parse)}
 
 
 # Password validation
