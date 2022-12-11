@@ -1,22 +1,46 @@
 #map {
-    height: 40rem;
+    height: 35rem;
     margin: 1rem;
 }
 
 header {
-    background-color: lightsteelblue;
+    background-color: dimgrey;
     padding: 1rem;
-    text-align: center;
-    font-size: 1em;
-    color: white;
 }
 
 footer {
-    background-color: lightsteelblue;
+    background-color: dimgrey;
+    position: absolute;
+    width: 100%;
+    bottom: 0;
     padding: 0.5rem;
     text-align: center;
     color: white;
 }
+
+h1{
+    font-size: 2em;
+    text-align: left;
+    color: white;
+}
+
+html, body{
+    height:100%;
+    background: rgb(249,249,237);
+    background: linear-gradient(0deg, rgba(249,249,237,1) 0%, rgba(217,219,241,1) 100%);
+}
+
+#map-container{
+    width: 55em;
+    border: solid #DBF4A7 3px;
+    margin: auto;
+}
+
+#option-container{
+    margin: 1em;
+}
+
+
 
 
 

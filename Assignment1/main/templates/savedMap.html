@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load leaflet_tags %}
+{% load static %}
+
+
+<head>
+
+     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.2/dist/leaflet.css"
+     integrity="sha256-sA+zWATbFveLLNqWO2gtiw3HL/lh1giY/Inf1BJ0z14="
+     crossorigin=""/>
+     <!-- Make sure you put this AFTER Leaflet's CSS -->
+    <script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js"
+     integrity="sha256-o9N1jGDZrf5tS+Ft4gbIK7mYMipq9lqpVJ91xHSyKhg="
+     crossorigin=""></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script></head>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+<body>
+    <div class="m-2 text-center">
+        <h4>Saved Trip:</h4>
+    </div>
+    <form action="/updatedb" method="post">
+        {% csrf_token %}
+    </form>
+    <div id="map-container">
+    <div id="map"></div>
+    </div>
+</body>
+
+<script type="text/javascript">
+
+    var savedLoc = "{{locationData|safe}}";
+    let waypointArray = []
+    let coordArray = []
+    let locationArray = savedLoc.split("|")
+    console.log("'" + locationArray[0] + "'" +" + " + "'" + locationArray[1] + "'" + " + " + locationArray.length)
+
+
+     map = L.map('map', {doubleClickZoom: false}).locate({setView: true, maxZoom: 14});
+     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(map);
+
+     function onLocationFound(e) {
+    var radius = e.accuracy;
+
+
+    L.circleMarker(e.latlng).addTo(map)
+        .bindPopup("You are within " + radius + " meters from this point").openPopup();
+
+    L.circle(e.latlng, radius).addTo(map);
+
+
+    nearbyAttractions();
+    }
+
+    map.on('locationfound', onLocationFound);
+
+
+     waypointArray[0] = "LatLng(" +locationArray[0]+ ")"
+    waypointArray[1] = "LatLng(" +locationArray[1]+ ")"
+     for(let i=0;i<locationArray.length - 1;i++) {
+
+         coord1Array = locationArray[i].split(",")
+         coord2Array = locationArray[i+1].split(",")
+
+         console.log("|" +locationArray[0] +"|")
+        route = L.Routing.control({
+            waypoints: [
+                L.latLng(coord1Array[0], coord1Array[1]),
+                L.latLng(coord2Array[0], coord2Array[1])
+            ],
+            routeWhileDragging: true
+        }).addTo(map);
+    }
+
+     function getCookie(cname) {
+     var name = cname + "=";
+     var ca = document.cookie.split(';');
+     for(var i=0; i<ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1);
+        if(c.indexOf(name) == 0)
+           return c.substring(name.length,c.length);
+     }
+     return "";
+    }
+
+
+     function nearbyAttractions() {
+
+                {#loadHide.style.display = 'block'#}
+                {#loadHide.style.visibility = 'visible'#}
+
+                let csrftoken = getCookie('csrftoken');
+
+                let bbox = map.getBounds().toBBoxString()
+                console.log("bbox: " + bbox);
+
+                $.ajax({
+                    type: "POST",
+                    url: '{% url 'main:nearby_attractions' %}',
+                    headers: {
+
+                        'X-CSRFToken': csrftoken
+                    },
+                    data: {
+
+                        bbox: map.getBounds().toBBoxString()
+                    }
+                }).done(function (data, status, xhr) {
+
+                    console.log(data);
+
+                    let markerStyle = {
+                        radius: 7,
+                        fillColor: "red",
+                        color: "black",
+                        weight: 1,
+                        opacity: 1,
+                        fillOpacity: 0.5
+                    }
+
+                    let geoJsonLayer = L.geoJson(data, {
+
+                        pointToLayer: function (feature, latlng) {
+                            let marker = L.circleMarker(latlng, markerStyle);
+                            name = feature.properties.name;
+                            website = feature.properties.website
+                            wheelchair = "" + feature.properties["wheelchair:description"]
+                            marker.bindPopup("<h7><u><strong>Attraction Info:</strong></u></h7><br>" + "Name: " + name + "<br/>Website: " + website + "<br/>"+ "Wheelchair Accessible: " + wheelchair + "<br/>")
+
+                            return marker
+                        },
+                    }).addTo(map);
+
+                    map.addLayer(geoJsonLayer);
+
+                }).fail(function (xhr, status, error) {
+                    var message = "OSM Overpass query failed.<br/>";
+                    console.log("Status: " + xhr.status + " " + xhr.responseText);
+                    showOkAlert(message);
+                }).always(function () {
+                    {#loadHide.style.display = 'none'#}
+                    {#loadHide.style.visibility = 'hidden'#}
+                });
+
+            }
+</script>
+
+{% endblock %}

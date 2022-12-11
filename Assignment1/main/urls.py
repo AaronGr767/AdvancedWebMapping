@@ -15,5 +15,8 @@ urlpatterns = [
     path('map', TemplateView.as_view(template_name="userMap.html"), name="map"),
     path('', TemplateView.as_view(template_name="home.html"), name="home"),
     path('logout', views.logout_request, name="logout"),
-    path('updatedb/', views.update_database, name='update_db')
+    path('updatedb/', views.update_database, name='update_db'),
+    path('nearbyattract/', views.nearby_attractions, name="nearby_attractions"),
+    path('savedmap', TemplateView.as_view(template_name="savedMap.html"), name="savedmap"),
+    path('savedview/', views.view_saved, name="view_saved")
 ]

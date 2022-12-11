@@ -13,10 +13,14 @@
             Hi {{ user.username }}! Welcome to this site!
         </div>
         <div class="m-2 text-center">
-            <button onclick="location.href='{%  url 'logout' %}'" type="button"   class="btn btn-outline-primary">
-             Log Out</button>
             <button onclick="location.href='{% url 'main:map' %}'" type="button" class="btn btn-outline-success">
-             View Map</button>
+             Create Trip<br>
+            <i class="fa-regular fa-square-plus"></i>
+            </button>
+            <button onclick="location.href='{% url 'main:view_saved' %}'" type="button" class="btn btn-outline-success">
+             View Saved Trip<br>
+            <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
         </div>
     {% else %}
         <div class="m-2 text-center">

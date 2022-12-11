@@ -33,23 +33,23 @@ SECRET_KEY = config('SECRET_KEY')
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = True
-DEBUG = config('DEBUG', default=False, cast=bool)
+DEBUG = True
+# DEBUG = config('DEBUG', default=False, cast=bool)
 # DEPLOY_SECURE = config('DEPLOY_SECURE', default=False, cast=bool)
 
 ALLOWED_HOSTS = []
 
-if config('DEPLOY_SECURE'):
-    DEBUG = False
-    CSRF_COOKIE_SECURE = True
-    SESSION_COOKIE_SECURE = True
-    ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=lambda v: [s.strip() for s in v.split(',')])
-    CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', cast=lambda v: [s.strip() for s in v.split(',')])
-else:
-    DEBUG = True
-    CSRF_COOKIE_SECURE = False
-    SESSION_COOKIE_SECURE = False
-    ALLOWED_HOSTS = []
+# if config('DEPLOY_SECURE'):
+#     DEBUG = False
+#     CSRF_COOKIE_SECURE = True
+#     SESSION_COOKIE_SECURE = True
+#     ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=lambda v: [s.strip() for s in v.split(',')])
+#     CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', cast=lambda v: [s.strip() for s in v.split(',')])
+# else:
+#     DEBUG = True
+#     CSRF_COOKIE_SECURE = False
+#     SESSION_COOKIE_SECURE = False
+#     ALLOWED_HOSTS = []
 
 # Application definition
 

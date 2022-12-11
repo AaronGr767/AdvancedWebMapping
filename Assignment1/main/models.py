@@ -11,11 +11,29 @@ User = get_user_model()
 class Profile(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     username = models.CharField(max_length=150, primary_key=True)
-    last_location = models.PointField(null=True)
-    favourite = models.PointField(null=True)
+    locations = models.CharField(max_length=350, null=True)
+    # loc0 = models.PointField(null=True)
+    # loc1 = models.PointField(null=True)
+    # loc2 = models.PointField(null=True)
+    # loc3 = models.PointField(null=True)
+    # loc4 = models.PointField(null=True)
+    # loc5 = models.PointField(null=True)
 
     def __str__(self):
         return f"{self.user}"
+
+# class TripRoute(models.Model):
+#     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+#     username = models.CharField(max_length=150, primary_key=True)
+#     loc0 = models.PointField(null=True)
+#     loc1 = models.PointField(null=True)
+#     loc2 = models.PointField(null=True)
+#     loc3 = models.PointField(null=True)
+#     loc4 = models.PointField(null=True)
+#     loc5 = models.PointField(null=True)
+#
+#     def __str__(self):
+#         return f"{self.user}"
 
 # class UserManager(BaseUserManager):
 #     use_in_migration = True
