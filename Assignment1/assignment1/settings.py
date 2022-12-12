@@ -14,7 +14,7 @@ from pathlib import Path
 import os
 import socket
 from decouple import config
-from django.conf.global_settings import DATABASES
+# from django.conf.global_settings import DATABASES
 
 #Deploy attempt
 import dj_database_url
@@ -22,7 +22,7 @@ import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'static/js', 'serviceworker.js')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -33,23 +33,23 @@ SECRET_KEY = config('SECRET_KEY')
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-# DEBUG = config('DEBUG', default=False, cast=bool)
+# DEBUG = True
+DEBUG = config('DEBUG', default=False, cast=bool)
 # DEPLOY_SECURE = config('DEPLOY_SECURE', default=False, cast=bool)
 
 ALLOWED_HOSTS = []
 
-# if config('DEPLOY_SECURE'):
-#     DEBUG = False
-#     CSRF_COOKIE_SECURE = True
-#     SESSION_COOKIE_SECURE = True
-#     ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=lambda v: [s.strip() for s in v.split(',')])
-#     CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', cast=lambda v: [s.strip() for s in v.split(',')])
-# else:
-#     DEBUG = True
-#     CSRF_COOKIE_SECURE = False
-#     SESSION_COOKIE_SECURE = False
-#     ALLOWED_HOSTS = []
+if config('DEPLOY_SECURE'):
+    DEBUG = False
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=lambda v: [s.strip() for s in v.split(',')])
+    CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', cast=lambda v: [s.strip() for s in v.split(',')])
+else:
+    DEBUG = True
+    CSRF_COOKIE_SECURE = False
+    SESSION_COOKIE_SECURE = False
+    ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'leaflet',
     'rest_framework',
+    'pwa',
 ]
 
 MIDDLEWARE = [
@@ -106,33 +107,33 @@ WSGI_APPLICATION = 'assignment1.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 # Deploy attempt
-# if os.environ.get('CONDA_PREFIX','').startswith('/opt'):
-#     DATABASES = {'default': config('DATABASE_DOCKER', default=None, cast=dj_database_url.parse)}
-# else:
-#     DATABASES = {'default': config('DATABASE_LOCAL', default=None, cast=dj_database_url.parse)}
-
-if os.environ.get('CONDA_PREFIX', '').startswith('/opt'):
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.contrib.gis.db.backends.postgis',
-            'NAME': 'gis',
-            'HOST': 'awm_assign2-db',
-            'USER': 'docker',
-            'PASSWORD': 'docker',
-            'PORT': 5432
-        }
-    }
+if os.environ.get('CONDA_PREFIX','').startswith('/opt'):
+    DATABASES = {'default': config('DATABASE_DOCKER', default=None, cast=dj_database_url.parse)}
 else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.contrib.gis.db.backends.postgis',
-            'NAME': 'gis',
-            'HOST': 'localhost',
-            'USER': 'docker',
-            'PASSWORD': 'docker',
-            'PORT': 25432
-        }
-    }
+    DATABASES = {'default': config('DATABASE_LOCAL', default=None, cast=dj_database_url.parse)}
+
+# if os.environ.get('CONDA_PREFIX', '').startswith('/opt'):
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.contrib.gis.db.backends.postgis',
+#             'NAME': 'gis',
+#             'HOST': 'awm_assign2-db',
+#             'USER': 'docker',
+#             'PASSWORD': 'docker',
+#             'PORT': 5432
+#         }
+#     }
+# else:
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.contrib.gis.db.backends.postgis',
+#             'NAME': 'gis',
+#             'HOST': 'localhost',
+#             'USER': 'docker',
+#             'PASSWORD': 'docker',
+#             'PORT': 25432
+#         }
+#     }
 
 # if socket.gethostname() =="DESKTOP-8550Q28":
 #     DATABASES["default"]["HOST"] = "localhost"
@@ -205,8 +206,9 @@ LEAFLET_CONFIG = {
     'SCALE': None,
     'OPACITY': 0.5,
 }
-LOGIN_REDIRECT_URL = "/"
-LOGOUT_REDIRECT_URL = "/"
+
+LOGIN_REDIRECT_URL = "main:home"
+LOGOUT_REDIRECT_URL = "main:home"
 
 # Deploy attempt
 # if DEPLOY_SECURE:
@@ -220,3 +222,33 @@ LOGOUT_REDIRECT_URL = "/"
 #     CSRF_COOKIE_SECURE = False
 #     SESSION_COOKIE_SECURE = False
 #     ALLOWED_HOSTS = []
+
+PWA_APP_NAME = 'assignment2'
+PWA_APP_DESCRIPTION = "CA2 PWA"
+PWA_APP_THEME_COLOR = '#000000'
+PWA_APP_BACKGROUND_COLOR = '#ffffff'
+PWA_APP_DISPLAY = 'standalone'
+PWA_APP_SCOPE = '/'
+PWA_APP_ORIENTATION = 'any'
+PWA_APP_START_URL = '/'
+PWA_APP_STATUS_BAR_COLOR = 'default'
+PWA_APP_ICONS = [
+	{
+		'src': 'static/images/icon.png',
+		'sizes': '160x160'
+	}
+]
+PWA_APP_ICONS_APPLE = [
+	{
+		'src': 'static/images/icon.png',
+		'sizes': '160x160'
+	}
+]
+PWA_APP_SPLASH_SCREEN = [
+	{
+		'src': 'static/images/icon.png',
+		'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)'
+	}
+]
+PWA_APP_DIR = 'ltr'
+PWA_APP_LANG = 'en-US'

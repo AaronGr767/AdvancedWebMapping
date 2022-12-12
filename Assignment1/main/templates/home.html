@@ -25,9 +25,9 @@
     {% else %}
         <div class="m-2 text-center">
             <button onclick="location.href='{% url 'login' %}'" type="button" class="btn btn-outline-primary">
-             Log In</button>
+             Log In<br><i class="fa-solid fa-right-to-bracket"></i></button>
             <button onclick="location.href='{% url 'main:registration' %}'" type="button" class="btn btn-outline-primary">
-             Register</button>
+             Register<br><i class="fa-solid fa-pen-to-square"></i></button>
         </div>
     {% endif %}
 {% endblock %}

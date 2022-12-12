@@ -36,14 +36,16 @@
             <span class="visually-hidden">Loading...</span>
         </div>
     </div>
+
+        <div id="option-container">
+        <button onclick="removeMarker()" class="btn btn-outline-danger">Remove Location <i class="fa-solid fa-trash"></i></button>
+        <button onclick="saveTrip()" class="btn btn-outline-success">Save Trip <i class="fa-solid fa-floppy-disk"></i></button>
+            </div>
         <div id="map-container">
         <div id="map"></div>
         </div>
 
-        <div id="option-container">
-        <button onclick="removeMarker()" class="btn btn-outline-danger">Remove Last Location</button>
-        <button onclick="saveTrip()" class="btn btn-outline-success">Save This Trip</button>
-            </div>
+
 
     </div>
 </body>

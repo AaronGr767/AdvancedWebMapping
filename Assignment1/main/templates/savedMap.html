@@ -25,6 +25,20 @@
     <form action="/updatedb" method="post">
         {% csrf_token %}
     </form>
+     <div class="m-2 text-center">
+    <div id="loadingIcon">
+        <div class="spinner-grow text-dark" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <div class="spinner-grow text-secondary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <div class="spinner-grow text-light" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+     </div>
+
     <div id="map-container">
     <div id="map"></div>
     </div>
@@ -38,6 +52,9 @@
     let locationArray = savedLoc.split("|")
     console.log("'" + locationArray[0] + "'" +" + " + "'" + locationArray[1] + "'" + " + " + locationArray.length)
 
+    let loadHide = document.getElementById('loadingIcon')
+    loadHide.style.display = 'block'
+     loadHide.style.visibility = 'visible'
 
      map = L.map('map', {doubleClickZoom: false}).locate({setView: true, maxZoom: 14});
      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -92,8 +109,8 @@
 
      function nearbyAttractions() {
 
-                {#loadHide.style.display = 'block'#}
-                {#loadHide.style.visibility = 'visible'#}
+                loadHide.style.display = 'block'
+                loadHide.style.visibility = 'visible'
 
                 let csrftoken = getCookie('csrftoken');
 
@@ -144,8 +161,8 @@
                     console.log("Status: " + xhr.status + " " + xhr.responseText);
                     showOkAlert(message);
                 }).always(function () {
-                    {#loadHide.style.display = 'none'#}
-                    {#loadHide.style.visibility = 'hidden'#}
+                    loadHide.style.display = 'none'
+                    loadHide.style.visibility = 'hidden'
                 });
 
             }
