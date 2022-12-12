@@ -19,39 +19,42 @@
     <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
 <body>
+
     <div class="m-2 text-center">
         <h4>Saved Trip:</h4>
     </div>
+
     <form action="/updatedb" method="post">
         {% csrf_token %}
     </form>
-     <div class="m-2 text-center">
-    <div id="loadingIcon">
-        <div class="spinner-grow text-dark" role="status">
-            <span class="visually-hidden">Loading...</span>
+
+        <div class="m-2 text-center">
+            <div id="loadingIcon">
+                <div class="spinner-grow text-dark" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <div class="spinner-grow text-secondary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <div class="spinner-grow text-light" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
         </div>
-        <div class="spinner-grow text-secondary" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-        <div class="spinner-grow text-light" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-    </div>
-     </div>
 
     <div id="map-container">
-    <div id="map"></div>
+        <div id="map"></div>
     </div>
 </body>
 
 <script type="text/javascript">
 
     var savedLoc = "{{locationData|safe}}";
-    let waypointArray = []
     let coordArray = []
     let locationArray = savedLoc.split("|")
     console.log("'" + locationArray[0] + "'" +" + " + "'" + locationArray[1] + "'" + " + " + locationArray.length)
 
+    //display loading icons
     let loadHide = document.getElementById('loadingIcon')
     loadHide.style.display = 'block'
      loadHide.style.visibility = 'visible'
@@ -62,29 +65,27 @@
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(map);
 
      function onLocationFound(e) {
-    var radius = e.accuracy;
+        var radius = e.accuracy;
 
+         L.circleMarker(e.latlng).addTo(map)
+            .bindPopup("You are within " + radius + " meters from this point").openPopup();
 
-    L.circleMarker(e.latlng).addTo(map)
-        .bindPopup("You are within " + radius + " meters from this point").openPopup();
+        L.circle(e.latlng, radius).addTo(map);
 
-    L.circle(e.latlng, radius).addTo(map);
-
-
-    nearbyAttractions();
+        nearbyAttractions();
     }
 
     map.on('locationfound', onLocationFound);
 
-
-     waypointArray[0] = "LatLng(" +locationArray[0]+ ")"
-    waypointArray[1] = "LatLng(" +locationArray[1]+ ")"
+     //iterates through until every waypoint has been routed
      for(let i=0;i<locationArray.length - 1;i++) {
 
+         //formats code correctly for use in routing
          coord1Array = locationArray[i].split(",")
          coord2Array = locationArray[i+1].split(",")
 
          console.log("|" +locationArray[0] +"|")
+         //maps the route
         route = L.Routing.control({
             waypoints: [
                 L.latLng(coord1Array[0], coord1Array[1]),
@@ -109,63 +110,64 @@
 
      function nearbyAttractions() {
 
-                loadHide.style.display = 'block'
-                loadHide.style.visibility = 'visible'
+        let csrftoken = getCookie('csrftoken');
 
-                let csrftoken = getCookie('csrftoken');
+        //set map boundary and post to associated view
 
-                let bbox = map.getBounds().toBBoxString()
-                console.log("bbox: " + bbox);
+        let bbox = map.getBounds().toBBoxString()
+        console.log("bbox: " + bbox);
 
-                $.ajax({
-                    type: "POST",
-                    url: '{% url 'main:nearby_attractions' %}',
-                    headers: {
+        $.ajax({
+            type: "POST",
+            url: '{% url 'main:nearby_attractions' %}',
+            headers: {
 
-                        'X-CSRFToken': csrftoken
-                    },
-                    data: {
+                'X-CSRFToken': csrftoken
+            },
+            data: {
 
-                        bbox: map.getBounds().toBBoxString()
-                    }
-                }).done(function (data, status, xhr) {
-
-                    console.log(data);
-
-                    let markerStyle = {
-                        radius: 7,
-                        fillColor: "red",
-                        color: "black",
-                        weight: 1,
-                        opacity: 1,
-                        fillOpacity: 0.5
-                    }
-
-                    let geoJsonLayer = L.geoJson(data, {
-
-                        pointToLayer: function (feature, latlng) {
-                            let marker = L.circleMarker(latlng, markerStyle);
-                            name = feature.properties.name;
-                            website = feature.properties.website
-                            wheelchair = "" + feature.properties["wheelchair:description"]
-                            marker.bindPopup("<h7><u><strong>Attraction Info:</strong></u></h7><br>" + "Name: " + name + "<br/>Website: " + website + "<br/>"+ "Wheelchair Accessible: " + wheelchair + "<br/>")
-
-                            return marker
-                        },
-                    }).addTo(map);
-
-                    map.addLayer(geoJsonLayer);
-
-                }).fail(function (xhr, status, error) {
-                    var message = "OSM Overpass query failed.<br/>";
-                    console.log("Status: " + xhr.status + " " + xhr.responseText);
-                    showOkAlert(message);
-                }).always(function () {
-                    loadHide.style.display = 'none'
-                    loadHide.style.visibility = 'hidden'
-                });
-
+                bbox: map.getBounds().toBBoxString()
             }
+        }).done(function (data, status, xhr) {
+
+            console.log(data);
+
+            let markerStyle = {
+                radius: 7,
+                fillColor: "red",
+                color: "black",
+                weight: 1,
+                opacity: 1,
+                fillOpacity: 0.5
+            }
+
+            //Map results from view api query
+            let geoJsonLayer = L.geoJson(data, {
+
+                pointToLayer: function (feature, latlng) {
+                    let marker = L.circleMarker(latlng, markerStyle);
+                    name = feature.properties.name;
+                    website = feature.properties.website
+                    wheelchair = "" + feature.properties["wheelchair:description"]
+                    marker.bindPopup("<h7><u><strong>Attraction Info:</strong></u></h7><br>" + "Name: " + name + "<br/>Website: " + website + "<br/>"+ "Wheelchair Accessible: " + wheelchair + "<br/>")
+
+                    return marker
+                },
+            }).addTo(map);
+
+            map.addLayer(geoJsonLayer);
+
+        }).fail(function (xhr, status, error) {
+            var message = "OSM Overpass query failed.<br/>";
+            console.log("Status: " + xhr.status + " " + xhr.responseText);
+            showOkAlert(message);
+        }).always(function () {
+            //hide loading
+            loadHide.style.display = 'none'
+            loadHide.style.visibility = 'hidden'
+        });
+
+    }
 </script>
 
 {% endblock %}

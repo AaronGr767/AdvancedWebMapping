@@ -19,33 +19,36 @@
     <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" /></head>
 <body>
+
     <form action="/updatedb" method="post">
         {% csrf_token %}
     </form>
-    <div class="m-2 text-center">
-    <h4>Create Trip:</h4>
 
-    <div id="loadingIcon">
-        <div class="spinner-grow text-dark" role="status">
-            <span class="visually-hidden">Loading...</span>
+    <div class="m-2 text-center">
+        <h4>Create Trip:</h4>
+
+        <div id="loadingIcon">
+            <div class="spinner-grow text-dark" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+
+            <div class="spinner-grow text-secondary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+
+            <div class="spinner-grow text-light" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
         </div>
-        <div class="spinner-grow text-secondary" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-        <div class="spinner-grow text-light" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-    </div>
 
         <div id="option-container">
-        <button onclick="removeMarker()" class="btn btn-outline-danger">Remove Location <i class="fa-solid fa-trash"></i></button>
-        <button onclick="saveTrip()" class="btn btn-outline-success">Save Trip <i class="fa-solid fa-floppy-disk"></i></button>
-            </div>
-        <div id="map-container">
-        <div id="map"></div>
+            <button onclick="removeMarker()" class="btn btn-outline-danger">Remove Location <i class="fa-solid fa-trash"></i></button>
+            <button onclick="saveTrip()" class="btn btn-outline-success">Save Trip <i class="fa-solid fa-floppy-disk"></i></button>
         </div>
 
-
+        <div id="map-container">
+            <div id="map"></div>
+        </div>
 
     </div>
 </body>
@@ -57,54 +60,59 @@
     maxZoom: 19,
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(map);
 
+     //make loading icon visible
     let loadHide = document.getElementById('loadingIcon')
     loadHide.style.display = 'block'
      loadHide.style.visibility = 'visible'
 
-
-     let clicker = false;
-
      let startLoc;
      let currLoc= [];
-     let lastLoc;
      let route= [];
      let counter = 0;
      let locString = [];
 
     function onLocationFound(e) {
-    var radius = e.accuracy;
+        var radius = e.accuracy;
 
+        L.marker(e.latlng).addTo(map)
+            .bindPopup("You are within " + radius + " meters from this point").openPopup();
 
-    L.marker(e.latlng).addTo(map)
-        .bindPopup("You are within " + radius + " meters from this point").openPopup();
+        L.circle(e.latlng, radius).addTo(map);
 
-    L.circle(e.latlng, radius).addTo(map);
+        //add start location to array which will contain each waypoint
+        locString[counter] = e.latlng.lat + ", " + e.latlng.lng;
 
-    locString[counter] = e.latlng.lat + ", " + e.latlng.lng;
+         startLoc = e;
+         nearbyAttractions();
 
-     startLoc = e;
-     nearbyAttractions();
-     console.log(startLoc);
-     console.log(e.latlng)
+         console.log(startLoc);
+         console.log(e.latlng)
     }
 
     map.on('locationfound', onLocationFound);
 
     function removeMarker(){
-    if(counter != 0) {
-        currLoc.splice[counter, 1]
-        counter = counter - 1;
-        map.removeControl(route[counter])
+        //if there is a location added (not including start)
+        if(counter != 0) {
+            //removes last location and reverts all variables by 1
+            currLoc.splice[counter, 1]
+            counter = counter - 1;
+            map.removeControl(route[counter])
 
+        }
     }
-}
 
     function onMapClick(e) {
 
-
         console.log("ex" + e.latlng);
-        if(counter < 4) {
+
+        //limit amount of added locations to 5
+        if(counter < 5) {
+
+            //if no locations added yet
             if (counter == 0) {
+
+                //map route from start
                 route[counter] = L.Routing.control({
                     waypoints: [
                         L.latLng(startLoc.latlng),
@@ -112,7 +120,10 @@
                     ],
                     routeWhileDragging: true
                 }).addTo(map);
+
             } else {
+
+                //map route from current
                 route[counter] = L.Routing.control({
                     waypoints: [
                         L.latLng(currLoc[counter].latlng),
@@ -120,23 +131,21 @@
                     ],
                     routeWhileDragging: true
                 }).addTo(map);
+
             }
 
             console.log("route" + counter + ":" + route[counter].waypoints)
 
-
-
+            //format waypoint for later use
             let locString1 = e.latlng.lat + ", " + e.latlng.lng;
-            console.log("b -" + locString)
 
-            {#locString += locString1#}
             console.log("a -" + locString)
             counter++;
+
+            //add latest waypoint to locString array
             locString[counter] = locString1
-            {#locString = e.latlng.lng + ", " + e.latlng.lat;#}
             currLoc[counter] = e
 
-            clicker = true
         } else {
             alert("You may only add up to 5 locations!")
         }
@@ -145,7 +154,7 @@
     }
 
     function saveTrip(){
-        //sort this later
+        //iterate through array containing all coords and put them in 1 string
         let saveString = "";
         for(i=0;i<=counter;i++){
             saveString += locString[i] + "|"
@@ -169,7 +178,7 @@
      return "";
     }
 
-
+    //update db with all waypoints string
     function update_db(locString) {
     $.ajax({
         type: "POST",
@@ -205,10 +214,9 @@
 
      function nearbyAttractions() {
 
-                loadHide.style.display = 'block'
-                loadHide.style.visibility = 'visible'
-
                 let csrftoken = getCookie('csrftoken');
+
+                //set map boundary and post to associated view
 
                 let bbox = map.getBounds().toBBoxString()
                 console.log("bbox: " + bbox);
@@ -237,6 +245,7 @@
                         fillOpacity: 0.5
                     }
 
+                    //Map results from view api query
                     let geoJsonLayer = L.geoJson(data, {
 
                         pointToLayer: function (feature, latlng) {
@@ -257,6 +266,7 @@
                     console.log("Status: " + xhr.status + " " + xhr.responseText);
                     showOkAlert(message);
                 }).always(function () {
+                    //hide loading icons
                     loadHide.style.display = 'none'
                     loadHide.style.visibility = 'hidden'
                 });

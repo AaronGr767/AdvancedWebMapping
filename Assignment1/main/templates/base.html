@@ -13,24 +13,31 @@
 </head>
 <body>
     <header>
+
     {% if user.is_authenticated %}
+
         <div class="m-2 text-center">
             <button onclick="location.href='{%  url 'logout' %}'" type="button"  style="float: right;" class="btn btn-outline-light">
                  {{ user.username }} : Log Out<br>
             <i class="fa-solid fa-door-open"></i></button>
+
             </button>
             <button onclick="location.href='{%  url 'main:home' %}'" type="button" style="float: right;margin-right: 5px;"  class="btn btn-outline-light">
              Home<br>
             <i class="fa-solid fa-house"></i>
             </button>
+
             <h1>AWM Assignment 2</h1>
-
-
         </div>
+
     {% else %}
+
         <h1>AWM Assignment 2</h1>
+
     {% endif %}
+
     </header>
+
     <main>
         {% block content %}
         {% endblock %}

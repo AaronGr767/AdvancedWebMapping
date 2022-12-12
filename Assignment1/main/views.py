@@ -13,13 +13,6 @@ from django.contrib.auth.decorators import login_required
 import json
 import overpy
 
-# from rest_framework.permissions import AllowAny
-# from rest_framework.views import APIView
-# from rest_framework.response import Response
-# from .serializers import UserSerializer,RegisterSerializer
-# from django.contrib.auth.models import User
-# from rest_framework.authentication import TokenAuthentication
-# from rest_framework import generics
 
 # Create your views here.
 def register_request(request):
@@ -84,42 +77,27 @@ def logout_request(request):
 	messages.info(request, "Successfully logged out!")
 	return redirect("main:home")
 
-# @login_required
-# def save_trip(request):
-# 	my_location = request.POST.get("point", None)
-# 	if not my_location:
-# 		return JsonResponse({"message": "No location found."}, status=400)
-#
-# 	try:
-# 		var = trip0;
-# 		my_coords = [float(coord) for coord in my_location.split(", ")]
-# 		my_profile = request.user.TripRoute
-# 		my_profile.$var + "" = Point(my_coords)
-# 		my_profile.save()
-#
-# 		message = f"Updated {request.user.username} with {f'POINT({my_location})'}"
-#
-#
-# 		return JsonResponse({"message": message}, status=200)
-# 	except:
-# 		return JsonResponse({"message": "No profile found."}, status=400)
+
 
 @login_required
 def nearby_attractions(request):
 	try:
+		#create overpass object
 		api = overpy.Overpass()
+
+		#get coords of map box
 		bounding_box = request.POST.get("bbox", None)
 		print("BBOX: ", bounding_box)
 
-		# changing the bounding box to have the correct coords in the right place
+		# changing the bounding box to have correct coords for the map box
 		if bounding_box:
 			bbox = bounding_box.split(",")
 
 			shuffled_bbox = [bbox[1], bbox[0], bbox[3], bbox[2]]
 			mod_boundingbox = [float(item) for item in shuffled_bbox]
 			bounding_box = mod_boundingbox
-		print(bounding_box)
 
+		#query to get all tourism attractions within bounding box area
 		result = api.query(f"""
         [out:json];
         (
@@ -136,11 +114,12 @@ def nearby_attractions(request):
 
 		print("hola!")
 
+		#if query has no results
 		if len(result.nodes) == 0:
 			return JsonResponse({"message": "No attractions found!"})
 
 
-
+		#array for list of features for each result
 		geojson_result = {
 
 			"type": "FeatureCollection",
@@ -161,6 +140,9 @@ def nearby_attractions(request):
 
 			poly = []
 			for node in way.nodes:
+				#record nodes in a 'way' and adds them to associated array
+
+				#make poly out of nodes in way
 				nodes_in_way.append(node.id)
 				poly.append([float(node.lon), float(node.lat)])
 
@@ -182,6 +164,7 @@ def nearby_attractions(request):
 				print(geojson_result)
 
 			for node in result.nodes:
+				#skip nodes in way as they have already been processed
 				if node.id in nodes_in_way:
 					continue
 
@@ -217,16 +200,3 @@ def view_saved(request):
 
 	return render(request, 'savedMap.html', context)
 
-# Class based view to Get User Details using Token Authentication
-# class UserDetailAPI(APIView):
-#   authentication_classes = (TokenAuthentication,)
-#   permission_classes = (AllowAny,)
-#   def get(self,request,*args,**kwargs):
-#     user = User.objects.get(id=request.user.id)
-#     serializer = UserSerializer(user)
-#     return Response(serializer.data)
-#
-# #Class based view to register user
-# class RegisterUserAPIView(generics.CreateAPIView):
-#   permission_classes = (AllowAny,)
-#   serializer_class = RegisterSerializer

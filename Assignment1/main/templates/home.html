@@ -9,23 +9,28 @@
 </head>
 
     {% if user.is_authenticated %}
+
         <div class="m-2 text-center">
             Hi {{ user.username }}! Welcome to this site!
         </div>
+
         <div class="m-2 text-center">
             <button onclick="location.href='{% url 'main:map' %}'" type="button" class="btn btn-outline-success">
              Create Trip<br>
             <i class="fa-regular fa-square-plus"></i>
             </button>
+
             <button onclick="location.href='{% url 'main:view_saved' %}'" type="button" class="btn btn-outline-success">
              View Saved Trip<br>
             <i class="fa-solid fa-magnifying-glass"></i>
             </button>
+
         </div>
     {% else %}
         <div class="m-2 text-center">
             <button onclick="location.href='{% url 'login' %}'" type="button" class="btn btn-outline-primary">
              Log In<br><i class="fa-solid fa-right-to-bracket"></i></button>
+
             <button onclick="location.href='{% url 'main:registration' %}'" type="button" class="btn btn-outline-primary">
              Register<br><i class="fa-solid fa-pen-to-square"></i></button>
         </div>
